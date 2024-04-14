@@ -1,1 +1,41 @@
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import java.io.File;
+import java.io.IOException;
+
+public class GitHubPushExample {
+
+    public static void main(String[] args) {
+        String localRepoPath = "/path/to/your/repository"; // Replace this with the path to your local repository
+        String remoteRepoURI = "https://github.com/username/repository.git"; // Replace this with your GitHub repository URL
+        String filePath = "example.txt"; // Replace this with the path to the file you want to add
+        String commitMessage = "Add example.txt"; // Your commit message
+        String username = "your_username"; // Your GitHub username
+        String password = "your_password"; // Your GitHub password or token
+
+        try {
+            // Open the local repository
+            Repository localRepo = Git.open(new File(localRepoPath)).getRepository();
+            
+            // Add the file to the index
+            Git git = new Git(localRepo);
+            git.add().addFilepattern(filePath).call();
+            
+            // Commit the changes
+            git.commit().setMessage(commitMessage).call();
+            
+            // Push the changes to the remote repository
+            git.push()
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+                    .setRemote(remoteRepoURI)
+                    .call();
+
+            System.out.println("Pushed to GitHub successfully!");
+        } catch (IOException | GitAPIException e) {
+            e.printStackTrace();
+        }
+    }
+}
 
